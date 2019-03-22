@@ -1,24 +1,12 @@
 import express from 'express';
 // graphql
-import graphqlHTTP from 'express-graphql';
-import schema from './schema';
+import { ApolloServer } from 'apollo-server-express';
+import { typeDefs } from './data/schema';
+import { resolvers } from './data/resolvers';
 
 const app = express();
+const server = new ApolloServer({ typeDefs, resolvers });
 
-app.get('/', (req, res) => {
-  res.send('Todo ok');
-});
+server.applyMiddleware({ app });
 
-// el resolver
-const root = { hola: () => "Hola Mundo desde GrahpQL" };
-
-app.use('/graphql', graphqlHTTP({
-  // que schema va a utilizar
-  schema,
-  // el resolver se pasa como rootValue
-  rootValue: root,
-  // utilizar graphiql
-  graphiql: true
-}));
-
-app.listen(8000, () => console.log('Server on port 8000'));
+app.listen({ port: 4000 }, () => console.log(`Server on port http://localhost:4000${server.graphqlPath}`));
